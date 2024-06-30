@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Storage</title>
+</head>
+<body>
+    <h1>Simple Storage Contract</h1>
+    <div>
+        <label for="value">Set Value:</label>
+        <input type="number" id="value" />
+        <button onclick="setValue()">Set Value</button>
+    </div>
+    <div>
+        <button onclick="getValue()">Get Value</button>
+        <p>Stored Value: <span id="storedValue"></span></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script>
+        // Your contract address
+        const contractAddress = '0x59AD276Db98df4608303c0a5c8e55ce888d10f8E';
+        // Your contract ABI
+        const contractABI = [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "x",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "set",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "get",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Connect to the Ethereum network
+        const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+
+        // Create contract instance
+        const simpleStorage = new web3.eth.Contract(contractABI, contractAddress);
+
+        // Set value in the contract
+        async function setValue() {
+            const accounts = await web3.eth.getAccounts();
+            const value = document.getElementById("value").value;
+            await simpleStorage.methods.set(value).send({ from: accounts[0] });
+        }
+
+        // Get value from the contract
+        async function getValue() {
+            const value = await simpleStorage.methods.get().call();
+            document.getElementById("storedValue").innerText = value;
+        }
+    </script>
+</body>
+</html>
